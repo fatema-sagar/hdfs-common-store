@@ -254,7 +254,6 @@
         <module>kafka-connect-parquet-formatter</module>
         <module>kafka-connect-s3-source</module>
         <module>kafka-connect-azure-blob-storage-source</module>
-        <module>kafka-connect-gcs-source</module>
     </modules>
 
 </project>

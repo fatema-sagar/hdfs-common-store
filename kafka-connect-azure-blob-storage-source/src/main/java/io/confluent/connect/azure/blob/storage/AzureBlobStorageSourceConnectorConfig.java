@@ -16,6 +16,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.confluent.connect.storage.partitioner.DailyPartitioner;
+import io.confluent.connect.storage.partitioner.DefaultPartitioner;
+import io.confluent.connect.storage.partitioner.FieldPartitioner;
+import io.confluent.connect.storage.partitioner.HourlyPartitioner;
+import io.confluent.connect.storage.partitioner.TimeBasedPartitioner;
+import io.confluent.connect.storage.partitioner.Partitioner;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Importance;
 import org.apache.kafka.common.config.ConfigDef.Type;
@@ -27,14 +33,8 @@ import org.apache.kafka.connect.errors.ConnectException;
 import com.azure.storage.common.policy.RequestRetryOptions;
 import com.azure.storage.common.policy.RetryPolicyType;
 
-import io.confluent.connect.storage.partitioner.DailyPartitioner;
-import io.confluent.connect.storage.partitioner.DefaultPartitioner;
-import io.confluent.connect.storage.partitioner.FieldPartitioner;
-import io.confluent.connect.storage.partitioner.HourlyPartitioner;
-import io.confluent.connect.storage.partitioner.TimeBasedPartitioner;
 import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
 import io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorCommonConfig;
-import io.confluent.connect.storage.partitioner.Partitioner;
 import io.confluent.connect.utils.Strings;
 import io.confluent.connect.utils.recommenders.Recommenders;
 

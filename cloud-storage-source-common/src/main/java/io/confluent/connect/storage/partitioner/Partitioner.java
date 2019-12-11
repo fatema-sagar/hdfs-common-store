@@ -4,8 +4,6 @@
 
 package io.confluent.connect.storage.partitioner;
 
-import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
-
 import java.util.Set;
 
 /**
@@ -19,7 +17,5 @@ public interface Partitioner {
   String getNextObjectName(String topic, String previousObject);
 
   boolean shouldReconfigure();
-
-  CloudSourceStorage createStorage();
 
 }

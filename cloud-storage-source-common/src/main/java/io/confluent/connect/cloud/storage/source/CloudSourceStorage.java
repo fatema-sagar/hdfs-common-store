@@ -6,7 +6,6 @@ package io.confluent.connect.cloud.storage.source;
 
 import java.io.Closeable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>This is SourceStorage interface which have methods needed to read 
@@ -61,9 +60,5 @@ public interface CloudSourceStorage extends Closeable {
 
   default void close() {
   }
-
-  String getNextObject(String topic, String previousObject);
-
-  Set<String> getPartitionList();
   
 }

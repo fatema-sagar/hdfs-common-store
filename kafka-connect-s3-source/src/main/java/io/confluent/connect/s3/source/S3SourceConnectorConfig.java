@@ -10,6 +10,12 @@ import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.confluent.connect.storage.partitioner.DailyPartitioner;
+import io.confluent.connect.storage.partitioner.DefaultPartitioner;
+import io.confluent.connect.storage.partitioner.FieldPartitioner;
+import io.confluent.connect.storage.partitioner.HourlyPartitioner;
+import io.confluent.connect.storage.partitioner.TimeBasedPartitioner;
+import io.confluent.connect.storage.partitioner.Partitioner;
 import org.apache.kafka.common.Configurable;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.types.Password;
@@ -26,12 +32,6 @@ import com.amazonaws.services.s3.model.SSECustomerKey;
 
 import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
 import io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorCommonConfig;
-import io.confluent.connect.storage.partitioner.Partitioner;
-import io.confluent.connect.storage.partitioner.DailyPartitioner;
-import io.confluent.connect.storage.partitioner.DefaultPartitioner;
-import io.confluent.connect.storage.partitioner.FieldPartitioner;
-import io.confluent.connect.storage.partitioner.HourlyPartitioner;
-import io.confluent.connect.storage.partitioner.TimeBasedPartitioner;
 import io.confluent.connect.utils.recommenders.Recommenders;
 import io.confluent.connect.utils.validators.Validators;
 import io.confluent.license.util.StringUtils;
