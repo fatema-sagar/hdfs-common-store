@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright [2019 - 2019] Confluent Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-connect-cloud-storage-source-parent</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>kafka-connect-s3-source</artifactId>
+    <name>kafka-connect-s3-source</name>
+    <description>A Kafka Connect plugin for S3</description>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>src/test/docker/**</exclude>
+                        <exclude>config/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-connect-maven-plugin</artifactId>
+                <version>${confluent.hub.packaging.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>kafka-connect</goal>
+                        </goals>
+                        <configuration>
+                            <title>Kafka Connect S3 Source</title>
+                            <version>${project.version}-preview</version>
+                            <ownerUsername>confluentinc</ownerUsername>
+                            <documentationUrl>https://docs.confluent.io/current/connect/kafka-connect-s3-source/</documentationUrl>
+                            <supportSummary><![CDATA[Confluent is introducing this preview connector to
+                                gain early feedback from developers. It should only be used for
+                                evaluation and non-production testing purposes or to provide
+                                feedback to Confluent and is subject to the
+                                <a href="https://www.confluent.io/confluent-software-evaluation-license/">Confluent Software Evaluation License.</a>
+                                Confluent will provide support for this connector for evaluation and non-production testing purposes.
+                                 Comments, questions and suggestions related to preview features
+                                are encouraged. Confluent customers may submit questions and suggestions, and file support tickets via the
+                                <a href="https://support.confluent.io/">Confluent Support Portal.</a>]]></supportSummary>
+                            <sourceUrl>none</sourceUrl>
+                            <ownerName>Confluent, Inc.</ownerName>
+                            <componentTypes>
+                                <componentType>source</componentType>
+                            </componentTypes>
+                            <tags>
+                                <tag>Object Storage</tag>
+                                <tag>AWS</tag>
+                                <tag>Amazon</tag>
+                                <tag>S3</tag>
+                            </tags>
+                            <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>org.apache.kafka.test.IntegrationTest</excludedGroups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.22.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <skip>${skipIntegrationTests}</skip>
+                    <groups>org.apache.kafka.test.IntegrationTest</groups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>${aws.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>cloud-storage-source-common</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.testing</groupId>
+            <artifactId>s3mock-junit4</artifactId>
+            <version>2.1.5</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <!-- Generate the configuration documentation -->
+            <id>docs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <!-- Execute with: mvn -Pdocs exec:java@source-config-docs -->
+                                <id>source-config-docs</id>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>io.confluent.connect.s3.source.S3SourceConnectorConfig</mainClass>
+                                    <classpathScope>compile</classpathScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>licenses-source</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <!-- skip integration tests on Jenkins since they require docker -->
+                <skipIntegrationTests>true</skipIntegrationTests>
+            </properties>
+        </profile>
+    </profiles>
+</project>

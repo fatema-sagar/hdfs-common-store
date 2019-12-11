@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright [2019 - 2019] Confluent Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.confluent</groupId>
+        <artifactId>connect-plugins-parent</artifactId>
+        <version>0.3.2</version>
+    </parent>
+
+    <artifactId>kafka-connect-cloud-storage-source-parent</artifactId>
+    <name>kafka-connect-cloud-storage-source-parent</name>
+    <version>1.2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <url>https://github.com/confluentinc/kafka-connect-s3-source</url>
+    <inceptionYear>2019</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Confluent Software Evaluation License</name>
+            <url>https://www.confluent.io/software-evaluation-license</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>confluentinc/connect</id>
+            <organization>Confluent, Inc.</organization>
+            <organizationUrl>https://www.confluent.io</organizationUrl>
+            <roles>
+                <role>creator</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/confluentinc/kafka-connect-s3-source.git</connection>
+        <developerConnection>scm:git:git@github.com:confluentinc/kafka-connect-s3-source.git
+        </developerConnection>
+        <url>https://github.com/confluentinc/kafka-connect-s3-source</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <project.inceptionYear>2019</project.inceptionYear>
+        <license.current.year>2019</license.current.year>
+        <connect-runtime-version>2.0.0</connect-runtime-version>
+        <confluent.hub.packaging.version>0.11.1</confluent.hub.packaging.version>
+        <confluent.licencing.version>0.11.1</confluent.licencing.version>
+        <confluent.connect.plugins.common.version>0.4.0-SNAPSHOT</confluent.connect.plugins.common.version>
+        <skipIntegrationTests>false</skipIntegrationTests>
+        <aws.version>1.11.86</aws.version>
+        <s3mock.version>0.2.5</s3mock.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>src/test/docker/**</exclude>
+                        <exclude>config/*</exclude>
+                        <exclude>COPYRIGHT</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>org.apache.kafka.test.IntegrationTest</excludedGroups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.22.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <skip>${skipIntegrationTests}</skip>
+                    <groups>org.apache.kafka.test.IntegrationTest</groups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>connect-licensing-extensions</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>connect-utils</artifactId>
+            <version>0.1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-connect-avro-converter</artifactId>
+            <version>5.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-json</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!--
+        Add test dependencies for the Connect integration test framework, which requires
+        the Kafka Connect runtime, the Kafka broker, and the Kafka broker test JAR.
+        Inherit all of the versions from the parent, but customized with
+        2.1.0-cp2 and 3.4.13
+        -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <type>test-jar</type>
+            <classifier>test</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${kafka.scala.version}</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${kafka.scala.version}</artifactId>
+            <type>test-jar</type>
+            <classifier>test</classifier>
+            <scope>test</scope>
+        </dependency>
+        <!-- Also include the test artifacts for Kafka clients for additional test utilities -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <classifier>test</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.23.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Inherited unnecessarily, scope to test so it's not packaged -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>common-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.19.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>confluent-artifactory-internal</id>
+            <url>https://confluent.jfrog.io/confluent/maven-releases</url>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <!-- skip integration tests on Jenkins since they require docker -->
+                <skipIntegrationTests>true</skipIntegrationTests>
+            </properties>
+        </profile>
+    </profiles>
+
+    <modules>
+        <module>cloud-storage-source-common</module>
+        <module>kafka-connect-parquet-formatter</module>
+        <module>kafka-connect-s3-source</module>
+        <module>kafka-connect-azure-blob-storage-source</module>
+        <module>kafka-connect-gcs-source</module>
+    </modules>
+
+</project>

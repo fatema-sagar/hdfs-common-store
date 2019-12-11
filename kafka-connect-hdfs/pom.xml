@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright [2019 - 2019] Confluent Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.confluent</groupId>
+        <artifactId>connect-plugins-parent</artifactId>
+        <version>0.4.2</version>
+    </parent>
+
+    <artifactId>kafka-connect-hdfs</artifactId>
+    <name>kafka-connect-hdfs</name>
+    <version>0.1.0-SNAPSHOT</version>
+    <description>A Kafka Connect plugin for HDFS Source Connector</description>
+    <url>https://github.com/confluentinc/kafka-connect-hdfs</url>
+    <inceptionYear>2019</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Confluent Software Evaluation License</name>
+            <url>https://www.confluent.io/software-evaluation-license</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>confluentinc/connect</id>
+            <organization>Confluent, Inc.</organization>
+            <organizationUrl>https://www.confluent.io</organizationUrl>
+            <roles>
+                <role>creator</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/confluentinc/kafka-connect-hdfs.git</connection>
+        <developerConnection>scm:git:git@github.com:confluentinc/kafka-connect-hdfs.git
+        </developerConnection>
+        <url>https://github.com/confluentinc/kafka-connect-hdfs</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <project.inceptionYear>2019</project.inceptionYear>
+        <license.current.year>2019</license.current.year>
+        <connect-runtime-version>2.0.0</connect-runtime-version>
+        <confluent.hub.packaging.version>0.11.1</confluent.hub.packaging.version>
+        <confluent.licencing.version>0.11.1</confluent.licencing.version>
+        <confluent.connect.plugins.common.version>0.4.2</confluent.connect.plugins.common.version>
+        <skipIntegrationTests>false</skipIntegrationTests>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>src/test/docker/**</exclude>
+                        <exclude>config/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-connect-maven-plugin</artifactId>
+                <version>${confluent.hub.packaging.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>kafka-connect</goal>
+                        </goals>
+                        <configuration>
+                            <title>Kafka Connect HDFS Source Connector Connector</title>
+                            <version>${project.version}-preview</version>
+                            <ownerUsername>confluentinc</ownerUsername>
+                            <documentationUrl>https://docs.confluent.io/current/connect/kafka-connect-hdfs/</documentationUrl>
+                            <supportSummary><![CDATA[Confluent is introducing this preview connector to
+                                gain early feedback from developers. It should only be used for
+                                evaluation and non-production testing purposes or to provide
+                                feedback to Confluent and is subject to the
+                                <a href="https://www.confluent.io/confluent-software-evaluation-license/">Confluent Software Evaluation License.</a>
+                                Confluent will provide support for this connector for evaluation and non-production testing purposes.
+
+                                Comments, questions and suggestions related to preview features
+                                are encouraged. Confluent customers may submit questions and suggestions, and file support tickets via the
+                                <a href="https://support.confluent.io/">Confluent Support Portal.</a>]]></supportSummary>
+                            <sourceUrl>none</sourceUrl>
+                            <ownerName>Confluent, Inc.</ownerName>
+                            <componentTypes>
+                                <!--
+                                TODO: Remove one of these if removing source or sink
+                                implementation from project. Or add 'transform' type if the
+                                project contains one or more SMTs.
+                                -->
+                                <componentType>source</componentType>
+                            </componentTypes>
+                            <tags>
+                                <!-- TODO: Add other tags -->
+                                <tag>HDFS Source Connector</tag>
+                            </tags>
+                            <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>org.apache.kafka.test.IntegrationTest</excludedGroups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.22.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <skip>${skipIntegrationTests}</skip>
+                    <groups>org.apache.kafka.test.IntegrationTest</groups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate-code-coverage-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>connect-licensing-extensions</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>connect-utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+        Add test dependencies for the Connect integration test framework, which requires
+        the Kafka Connect runtime, the Kafka broker, and the Kafka broker test JAR.
+        Inherit all of the versions from the parent, but customized with
+        5.3.0-ccs and 3.4.14
+        -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <type>test-jar</type>
+            <classifier>test</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${kafka.scala.version}</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${kafka.scala.version}</artifactId>
+            <type>test-jar</type>
+            <classifier>test</classifier>
+            <scope>test</scope>
+        </dependency>
+        <!-- Also include the test artifacts for Kafka clients for additional test utilities -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <classifier>test</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.23.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- TODO: Add this dependency if tests automatically start Docker -->
+        <!--dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+            <scope>test</scope>
+        </dependency-->
+
+        <!-- Inherited unnecessarily, scope to test so it's not packaged -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>common-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>confluent-artifactory-internal</id>
+            <url>https://confluent.jfrog.io/confluent/maven-releases</url>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <!-- Generate the configuration documentation -->
+            <id>docs</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <!-- Execute with: mvn -Pdocs exec:java@sink-config-docs -->
+                                <id>sink-config-docs</id>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>io.confluent.MySinkConnectorConfig</mainClass>
+                                    <classpathScope>compile</classpathScope>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <!-- Execute with: mvn -Pdocs exec:java@source-config-docs -->
+                                <id>source-config-docs</id>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>io.confluent.connect.hdfs.source.HDSourceConnectorConfig</mainClass>
+                                    <classpathScope>compile</classpathScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>licenses-source</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <!-- skip integration tests on Jenkins since they require docker -->
+                <skipIntegrationTests>true</skipIntegrationTests>
+            </properties>
+        </profile>
+    </profiles>
+</project>
