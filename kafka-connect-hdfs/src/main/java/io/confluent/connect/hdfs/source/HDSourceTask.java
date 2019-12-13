@@ -4,24 +4,27 @@
 
 package io.confluent.connect.hdfs.source;
 
+import io.confluent.connect.cloud.storage.source.AbstractCloudStorageSourceTask;
+import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
+import io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorCommonConfig;
+import io.confluent.connect.cloud.storage.source.util.StorageObjectSourceReader;
+import io.confluent.connect.storage.partitioner.Partitioner;
 import io.confluent.connect.utils.Version;
-import org.apache.kafka.connect.source.SourceRecord;
-import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-public class HDSourceTask extends SourceTask {
+public class HDSourceTask extends AbstractCloudStorageSourceTask {
   /*
     Your connector should never use System.out for logging. All of your classes should use slf4j
     for logging
   */
   static final Logger log = LoggerFactory.getLogger(HDSourceTask.class);
 
-  HDSourceConnectorConfig config;
+  private HDSourceConnectorConfig config;
+
+  public HDSourceTask() {}
 
   @Override
   public String version() {
@@ -29,23 +32,36 @@ public class HDSourceTask extends SourceTask {
   }
 
   @Override
-  public void start(Map<String, String> settings) {
-    config = new HDSourceConnectorConfig(settings);
-
-    //TODO: Do things here that are required to start your task.
-    //This could be open a connection to a database, etc.
+  protected CloudStorageSourceConnectorCommonConfig createConfig(Map<String, String> props) {
+    this.config = new HDSourceConnectorConfig(props);
+    return this.config;
   }
 
   @Override
-  public List<SourceRecord> poll() throws InterruptedException {
-    //TODO: Create SourceRecord objects that will be sent the kafka cluster.
-    // Throw ConnectException if there's a failure
-    // Throw RetriableException if Connect should try again
-    return Collections.emptyList();
+  protected CloudSourceStorage createStorage() {
+    return new HDStorage(config, config.getHdfsUrl());
   }
 
   @Override
-  public void stop() {
-    //TODO: Do whatever is required to stop your task.
+  protected Partitioner getPartitioner(CloudSourceStorage storage) {
+    return config.getPartitioner(storage);
   }
+
+  //Visible for testing
+  protected HDSourceTask(Map<String, String> settings, CloudSourceStorage storage) {
+    super(settings, storage,
+        new StorageObjectSourceReader(new HDSourceConnectorConfig(settings)));
+  }
+
+  // Visible for testing
+  protected HDSourceTask(HDSourceConnectorConfig config,
+      HDStorage storage, StorageObjectSourceReader reader) {
+    folders = config.getList(HDSourceConnectorConfig.FOLDERS_CONFIG);
+    this.storage = storage;
+    this.config = config;
+    sourceReader = reader;
+    partitioner = config.getPartitioner(storage);
+    maxBatchSize = config.getRecordBatchMaxSize();
+  }
+
 }
