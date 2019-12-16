@@ -6,13 +6,11 @@ package io.confluent.connect.storage.partitioner;
 
 import io.confluent.connect.hdfs.source.HDSourceConnectorConfig;
 import io.confluent.connect.hdfs.source.HDStorage;
-import org.apache.hadoop.fs.FileStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +50,7 @@ public class DefaultPartitioner implements Partitioner {
         } catch (IOException exception) {
             log.error("Caught an IOException while fetching data");
         }
-
+        return partitions;
     }
 
     public String getNextObjectName(String topic, String previousObject) {
