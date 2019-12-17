@@ -20,9 +20,9 @@ public class HDSourceTask extends AbstractCloudStorageSourceTask {
     Your connector should never use System.out for logging. All of your classes should use slf4j
     for logging
   */
-  static final Logger log = LoggerFactory.getLogger(HDSourceTask.class);
+  private static final Logger log = LoggerFactory.getLogger(HDSourceTask.class);
 
-  private HDSourceConnectorConfig config;
+  protected HDSourceConnectorConfig config;
 
   public HDSourceTask() {}
 
@@ -44,7 +44,11 @@ public class HDSourceTask extends AbstractCloudStorageSourceTask {
 
   @Override
   protected Partitioner getPartitioner(CloudSourceStorage storage) {
-    return config.getPartitioner(storage);
+      return config.getPartitioner(storage);
+  }
+
+  public void start(Map<String, String> props) {
+    super.start(props);
   }
 
   //Visible for testing

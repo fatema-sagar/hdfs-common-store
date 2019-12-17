@@ -6,7 +6,6 @@ package io.confluent.connect.hdfs.source;
 
 import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
 import io.confluent.connect.cloud.storage.source.StorageObject;
-import io.confluent.license.util.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -17,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +27,10 @@ import java.util.Set;
 public class HDStorage implements CloudSourceStorage {
 
     private static final Logger log = LoggerFactory.getLogger(HDStorage.class);
+
     private static final String VERSION_FORMAT = "APN/1.0 Confluent/1.0 KafkaHDFSConnector/%s";
     private final String url;
+    private String key;
     private final HDSourceConnectorConfig config;
     private FileSystem fileSystem;
     private Set<String> topicPartiton = new HashSet<>();
@@ -55,13 +57,13 @@ public class HDStorage implements CloudSourceStorage {
         for(FileStatus status : fileStatus){
             if (status.getPath().toString().contains(config.getTopicsFolder())) {
                 readFilesFromFolder(status.getPath().toString());
+                break;
             }
         }
         return topicPartiton;
     }
 
     private void readFilesFromFolder(String path) throws IOException {
-
         FileSystem fileSystem = FileSystem.get(URI.create(path), new Configuration());
         FileStatus[] status = fileSystem.listStatus(new Path(path));
         for (FileStatus fileStatus : status) {
@@ -83,6 +85,7 @@ public class HDStorage implements CloudSourceStorage {
 
     @Override
     public StorageObject getStorageObject(String key) {
+        this.key = key;
         return new HDStorageObject(fileSystem, key);
     }
 
@@ -94,30 +97,70 @@ public class HDStorage implements CloudSourceStorage {
     }
 
     @Override
-    public boolean exists(String name) { return StringUtils.isNotBlank(name); }
+    public boolean exists(String name) {
+        try {
+            if (fileSystem.exists(new Path(key))) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     public boolean bucketExists() {
+        try {
+            if (fileSystem.exists(new Path(key))) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public void delete(String name) {
-
+        if (fileSystem.equals(name)) {
+            return;
+        } else {
+            try {
+                fileSystem.deleteSnapshot(new Path(key), name);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public StorageObject open(String path) {
-        return null;
+        log.trace("Opening file stream to filesystem {} and path {}");
+        return new HDStorageObject(fileSystem, key);
     }
 
     public void close(){
+        try {
+            fileSystem.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getNextFileName(String path, String startAfterThisFile, String fileSuffix) {
         log.trace("Listing objects on hdfs with path {} starting after file {} and having suffix {}",
                 path, startAfterThisFile, fileSuffix
         );
-        return null;
+        String filename = "";
+        Iterator itr = topicPartiton.iterator();
+
+        while (itr.hasNext()){
+            if(itr.equals(startAfterThisFile)) {
+                if (itr.next().toString().contains(fileSuffix)) {
+                    filename = itr.next().toString();
+                }
+            }
+        }
+        return filename;
     }
 }

@@ -29,7 +29,7 @@ public class DefaultPartitioner implements Partitioner {
     }
 
     @Override
-    public Set<String> getPartitions() throws IOException {
+    public Set<String> getPartitions() {
         partitions = calculatePartitions();
         return partitions;
     }
@@ -45,11 +45,10 @@ public class DefaultPartitioner implements Partitioner {
         Set<String> partitions = new HashSet<>();
         try {
             partitions = storage.readFiles();
-            log.debug("Got partitions {}", partitions);
-            return partitions;
-        } catch (IOException exception) {
-            log.error("Caught an IOException while fetching data");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        log.debug("Got partitions {}", partitions);
         return partitions;
     }
 
@@ -57,6 +56,7 @@ public class DefaultPartitioner implements Partitioner {
         log.trace("Get next object from topic {} using previous object {} and extension {}", topic,
                 previousObject, extension
         );
+
         return storage.getNextFileName(topic, previousObject, extension);
     }
 

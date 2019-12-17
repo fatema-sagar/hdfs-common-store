@@ -14,7 +14,7 @@
 
     <artifactId>kafka-connect-hdfs</artifactId>
     <name>kafka-connect-hdfs</name>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <description>A Kafka Connect plugin for HDFS Source Connector</description>
     <url>https://github.com/confluentinc/kafka-connect-hdfs</url>
     <inceptionYear>2019</inceptionYear>
@@ -252,6 +252,16 @@
             <groupId>io.confluent</groupId>
             <artifactId>common-utils</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>cloud-storage-source-common</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

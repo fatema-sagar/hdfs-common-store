@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public interface Partitioner {
 
-  Set<String> getPartitions();
+  Set<String> getPartitions() ;
 
   String getNextObjectName(String topic, String previousObject);
 

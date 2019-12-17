@@ -251,6 +251,7 @@
 
     <modules>
         <module>cloud-storage-source-common</module>
+        <module>kafka-connect-hdfs</module>
         <module>kafka-connect-parquet-formatter</module>
         <module>kafka-connect-s3-source</module>
         <module>kafka-connect-azure-blob-storage-source</module>

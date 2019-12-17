@@ -4,8 +4,6 @@
 
 package io.confluent.connect.hdfs.source;
 
-import io.confluent.connect.hdfs.source.HDSourceConnectorConfig;
-import io.confluent.connect.hdfs.source.HDSourceTask;
 import io.confluent.connect.utils.licensing.LicenseConfigUtil;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -16,9 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class HDSourceTaskTest {
 
@@ -28,7 +24,7 @@ public class HDSourceTaskTest {
   @Before
   public void before() {
     settings = new HashMap<>();
-    settings.put(HDSourceConnectorConfig.MY_SETTING_CONFIG, "local://localhost:2876");
+    settings.put(HDSourceConnectorConfig.STORE_URL_CONFIG, "hdfs://localhost:9000");
     settings.put(LicenseConfigUtil.CONFLUENT_TOPIC_BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 
     task = new HDSourceTask();
