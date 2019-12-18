@@ -87,27 +87,16 @@ public class HDSourceConnectorConfig extends CloudStorageSourceConnectorCommonCo
             HDF_RETRY_BACKOFF_DISPLAY );
 
     configDef
-            .define(
-                    PARTITIONER_CLASS_CONFIG,
-                    Type.CLASS,
-                    PARTIONER_CLASS_DEFAULT,
-                    Importance.MEDIUM,
-                    PARTITIONER_CLASS_DOC,
-                    groupPartitioner,
-                    orderInGroup++,
-                    Width.LONG,
-                    PARTITIONER_CLASS_DISPLAY );
-
-//    configDef
-//        .define(
-//            PARTITIONER_CLASS_CONFIG,
-//            Type.CLASS,
-//            Importance.MEDIUM,
-//            PARTITIONER_CLASS_DOC,
-//            groupPartitioner,
-//            ++orderInGroup,
-//            Width.LONG,
-//            PARTITIONER_CLASS_DISPLAY);
+        .define(
+            PARTITIONER_CLASS_CONFIG,
+            Type.CLASS,
+            PARTIONER_CLASS_DEFAULT,
+            Importance.MEDIUM,
+            PARTITIONER_CLASS_DOC,
+            groupPartitioner,
+            orderInGroup++,
+            Width.LONG,
+            PARTITIONER_CLASS_DISPLAY );
 
     return configDef;
   }

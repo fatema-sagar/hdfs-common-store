@@ -24,7 +24,7 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
   private static final String CONNECTOR_NAME = "hdfs-source-connector";
 
   private static final int NUMBER_OF_PARTITIONS = 1;
-  private static final String KAFKA_TOPIC = "destination";
+  private static final String KAFKA_TOPIC = "avro_it_test";
 
   @Before
   public void setup() throws IOException {
@@ -35,21 +35,17 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
   @After
   public void close() {
     //TODO: Stop the proxy or external system
-
     stopConnect();
   }
 
   @Test
   public void testAvroDataWithDefaultPartitioner() throws Exception {
-    // TODO: Set up a proxy or use an endpoint
-
     // create topic in Kafka
     connect.kafka().createTopic(KAFKA_TOPIC, NUMBER_OF_PARTITIONS);
 
     // setup up props for the source connector
     Map<String, String> props = connectorConfiguration();
     props.put("format.class", AVRO_FORMAT_CLASS);
-    //TODO: put connector-specific properties
 
     // start a source connector
     connect.configureConnector(CONNECTOR_NAME, props);
