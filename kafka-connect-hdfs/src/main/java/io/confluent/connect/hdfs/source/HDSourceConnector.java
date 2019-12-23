@@ -33,9 +33,6 @@ public class HDSourceConnector extends AbstractCloudStorageSourceConnector {
 
   public HDSourceConnector() {}
 
-  //visible for test
-//  HDSourceConnector(HDStorage storage, ConnectLicenseManager licenseManager) { super(storage, licenseManager); }
-
   @Override
   public String version() {
     return Version.forClass(this.getClass());
@@ -53,10 +50,14 @@ public class HDSourceConnector extends AbstractCloudStorageSourceConnector {
   }
 
   @Override
-  protected CloudSourceStorage createStorage() { return new HDStorage(config, config.getHdfsUrl()); }
+  protected CloudSourceStorage createStorage() {
+    return new HDStorage(config, config.getHdfsUrl());
+  }
 
   @Override
-  protected Partitioner getPartitioner(CloudSourceStorage storage) { return config.getPartitioner(storage); }
+  protected Partitioner getPartitioner(CloudSourceStorage storage) {
+    return config.getPartitioner(storage);
+  }
 
   void setConfig(Map<String, String> props) {
     this.config = new HDSourceConnectorConfig(props);

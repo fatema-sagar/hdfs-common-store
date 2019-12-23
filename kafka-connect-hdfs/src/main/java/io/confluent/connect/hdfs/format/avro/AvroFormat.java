@@ -8,7 +8,7 @@ import io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorComm
 import io.confluent.connect.cloud.storage.source.format.CloudStorageAvroFormat;
 
 public class AvroFormat extends CloudStorageAvroFormat {
-    public AvroFormat(CloudStorageSourceConnectorCommonConfig config) {
-        super(config);
-    }
+  public AvroFormat(CloudStorageSourceConnectorCommonConfig config) {
+      super(config);
+  }
 }

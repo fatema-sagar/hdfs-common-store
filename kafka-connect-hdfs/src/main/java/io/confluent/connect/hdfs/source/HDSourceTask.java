@@ -44,7 +44,7 @@ public class HDSourceTask extends AbstractCloudStorageSourceTask {
 
   @Override
   protected Partitioner getPartitioner(CloudSourceStorage storage) {
-      return config.getPartitioner(storage);
+    return config.getPartitioner(storage);
   }
 
   public void start(Map<String, String> props) {
@@ -54,7 +54,7 @@ public class HDSourceTask extends AbstractCloudStorageSourceTask {
   //Visible for testing
   protected HDSourceTask(Map<String, String> settings, CloudSourceStorage storage) {
     super(settings, storage,
-        new StorageObjectSourceReader(new HDSourceConnectorConfig(settings)));
+      new StorageObjectSourceReader(new HDSourceConnectorConfig(settings)));
   }
 
   // Visible for testing

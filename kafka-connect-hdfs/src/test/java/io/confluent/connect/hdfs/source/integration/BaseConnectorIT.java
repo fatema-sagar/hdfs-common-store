@@ -7,9 +7,9 @@ package io.confluent.connect.hdfs.source.integration;
 import org.apache.kafka.connect.runtime.AbstractStatus;
 import org.apache.kafka.connect.runtime.rest.entities.ConnectorStateInfo;
 import org.apache.kafka.connect.util.clusters.EmbeddedConnectCluster;
-import org.apache.kafka.test.IntegrationTest;
 import org.apache.kafka.test.TestUtils;
 import org.junit.experimental.categories.Category;
+import org.apache.kafka.test.IntegrationTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,6 @@ public abstract class BaseConnectorIT {
     connect = new EmbeddedConnectCluster.Builder()
         .name("my-connect-cluster")
         .build();
-
     // start the clusters
     connect.start();
 
