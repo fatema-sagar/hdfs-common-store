@@ -13,6 +13,7 @@ import io.confluent.connect.utils.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class HDSourceTask extends AbstractCloudStorageSourceTask {
@@ -39,7 +40,12 @@ public class HDSourceTask extends AbstractCloudStorageSourceTask {
 
   @Override
   protected CloudSourceStorage createStorage() {
-    return new HDStorage(config, config.getHdfsUrl());
+    try {
+      return new HDStorage(config, config.getHdfsUrl());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   @Override

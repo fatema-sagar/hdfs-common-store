@@ -19,59 +19,19 @@
     <url>https://github.com/confluentinc/kafka-connect-hdfs</url>
     <inceptionYear>2019</inceptionYear>
 
-    <licenses>
-        <license>
-            <name>Confluent Software Evaluation License</name>
-            <url>https://www.confluent.io/software-evaluation-license</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>confluentinc/connect</id>
-            <organization>Confluent, Inc.</organization>
-            <organizationUrl>https://www.confluent.io</organizationUrl>
-            <roles>
-                <role>creator</role>
-                <role>maintainer</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/confluentinc/kafka-connect-hdfs.git</connection>
-        <developerConnection>scm:git:git@github.com:confluentinc/kafka-connect-hdfs.git
-        </developerConnection>
-        <url>https://github.com/confluentinc/kafka-connect-hdfs</url>
-        <tag>HEAD</tag>
-    </scm>
-
     <properties>
-        <project.inceptionYear>2019</project.inceptionYear>
-        <license.current.year>2019</license.current.year>
-        <connect-runtime-version>2.0.0</connect-runtime-version>
-        <confluent.hub.packaging.version>0.11.1</confluent.hub.packaging.version>
-        <confluent.licencing.version>0.11.1</confluent.licencing.version>
-        <confluent.connect.plugins.common.version>0.4.2</confluent.connect.plugins.common.version>
-        <skipIntegrationTests>false</skipIntegrationTests>
+        <hadoop.version>2.7.3</hadoop.version>
+        <apacheds-jdbm1.version>2.0.0-M2</apacheds-jdbm1.version>
     </properties>
 
+<!--    <licenses>-->
+<!--        <license>-->
+<!--            <name>Confluent Software Evaluation License</name>-->
+<!--            <url>https://www.confluent.io/software-evaluation-license</url>-->
+<!--        </license>-->
+<!--    </licenses>-->
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>src/test/docker/**</exclude>
-                        <exclude>config/*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>io.confluent</groupId>
                 <artifactId>kafka-connect-maven-plugin</artifactId>
@@ -99,65 +59,16 @@
                             <sourceUrl>none</sourceUrl>
                             <ownerName>Confluent, Inc.</ownerName>
                             <componentTypes>
-                                <!--
-                                TODO: Remove one of these if removing source or sink
-                                implementation from project. Or add 'transform' type if the
-                                project contains one or more SMTs.
-                                -->
                                 <componentType>source</componentType>
                             </componentTypes>
                             <tags>
-                                <!-- TODO: Add other tags -->
                                 <tag>HDFS Source Connector</tag>
+                                <tag>HDFS</tag>
+                                <tag>Hadoop</tag>
+                                <tag>File System</tag>
                             </tags>
                             <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludedGroups>org.apache.kafka.test.IntegrationTest</excludedGroups>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>2.22.1</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <skip>${skipIntegrationTests}</skip>
-                    <groups>org.apache.kafka.test.IntegrationTest</groups>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>generate-code-coverage-report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -165,52 +76,156 @@
     </build>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>connect-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--
-        Add test dependencies for the Connect integration test framework, which requires
-        the Kafka Connect runtime, the Kafka broker, and the Kafka broker test JAR.
-        Inherit all of the versions from the parent, but customized with
-        5.3.0-ccs and 3.4.14
-        -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_${kafka.scala.version}</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.11.4</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- Also include the test artifacts for Kafka clients for additional test utilities -->
-        <!-- TODO: Add this dependency if tests automatically start Docker -->
-        <!--dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
-            <scope>test</scope>
-        </dependency-->
-
-        <!-- Inherited unnecessarily, scope to test so it's not packaged -->
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>2.7.3</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>cloud-storage-source-common</artifactId>
             <version>1.2.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-connect-parquet-formatter</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>jsp-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.11</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--  We are overrriding the connect runtime framework here due to dependency conflict of
+              jersy of mini cluster. therefore we are adding an explicit dependecy of connect runtime to add dependency
+              only when needed,i.e running integration tests. The mini-cluster dependency is of test scope and therefore
+              will not be built into the jar. Both these dependency are not needed for the connector to run.
+              These are needed only for tests(Unit + Integration)-->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <type>test-jar</type>
+            <classifier>test</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-minicluster</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>jsp-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-minikdc</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <!-- exclude this from hadoop minikdc as the minikdc
+                        depends on the apacheds-jdbm1 bundle, which is not available in maven central -->
+                    <groupId>org.apache.directory.jdbm</groupId>
+                    <artifactId>apacheds-jdbm1</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- add this to satisfy the dependency requirement of apacheds-jdbm1-->
+            <groupId>org.apache.directory.jdbm</groupId>
+            <artifactId>apacheds-jdbm1</artifactId>
+            <version>${apacheds-jdbm1.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>confluent-artifactory-internal</id>
-            <url>https://confluent.jfrog.io/confluent/maven-releases</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>confluent-artifactory-internal</id>-->
+<!--            <url>https://confluent.jfrog.io/confluent/maven-releases</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
     <profiles>
         <profile>
@@ -223,18 +238,6 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
-                            <execution>
-                                <!-- Execute with: mvn -Pdocs exec:java@sink-config-docs -->
-                                <id>sink-config-docs</id>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>io.confluent.MySinkConnectorConfig</mainClass>
-                                    <classpathScope>compile</classpathScope>
-                                </configuration>
-                            </execution>
-
                             <execution>
                                 <!-- Execute with: mvn -Pdocs exec:java@source-config-docs -->
                                 <id>source-config-docs</id>
@@ -265,13 +268,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <!-- skip integration tests on Jenkins since they require docker -->
-                <skipIntegrationTests>true</skipIntegrationTests>
-            </properties>
         </profile>
     </profiles>
 </project>

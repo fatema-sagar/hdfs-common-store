@@ -38,9 +38,10 @@ public class HDStorage implements CloudSourceStorage {
    * @param url HDFS address
    * @param config HDFS Configuration
    */
-  public HDStorage(HDSourceConnectorConfig config, String url) {
+  public HDStorage(HDSourceConnectorConfig config, String url) throws IOException {
     this.url = url;
     this.config = config;
+    fileSystem = FileSystem.get(URI.create(config.getHdfsUrl()), new Configuration());
   }
 
   public String getUrl() {
@@ -55,13 +56,9 @@ public class HDStorage implements CloudSourceStorage {
    * @throws IOException The exception is thrown when the connector is unable to find the url.
    */
   public Set<String> readFiles() throws IOException {
-    FileSystem fs = FileSystem.get(URI.create(config.getHdfsUrl()), new Configuration());
-    FileStatus[] fileStatus = fs.listStatus(new Path(config.getHdfsUrl()));
+    FileStatus[] fileStatus = fileSystem.listStatus(new Path(config.getHdfsUrl() + config.getTopicsFolder() + config.getStorageDelimiter()));
     for (FileStatus status : fileStatus) {
-      if (status.getPath().toString().contains(config.getTopicsFolder())) {
-        readFilesFromFolder(status.getPath().toString());
-        break;
-      }
+      readFilesFromFolder(status.getPath().toString());
     }
     return topicPartiton;
   }
@@ -71,18 +68,8 @@ public class HDStorage implements CloudSourceStorage {
     FileStatus[] status = fileSystem.listStatus(new Path(path));
     for (FileStatus fileStatus : status) {
       if (!fileStatus.getPath().toString().contains("/+tmp")) {
-        countPartitions(fileStatus);
-      }
-    }
-  }
-
-  private void countPartitions(FileStatus fileStatus) throws IOException {
-    if (fileStatus.isDirectory()) {
-      FileSystem fs = FileSystem.get(URI.create(fileStatus.getPath().toString()),
-              new Configuration());
-      FileStatus[] fst = fs.listStatus(new Path(fileStatus.getPath().toString()));
-      for (FileStatus status : fst) {
-        topicPartiton.add(status.getPath().toString());
+        log.info("Partitions: "+status);
+        topicPartiton.add(fileStatus.getPath().toString());
       }
     }
   }
@@ -101,7 +88,7 @@ public class HDStorage implements CloudSourceStorage {
   @Override
   public boolean exists(String name) {
     try {
-      if (fileSystem.exists(new Path(key))) {
+      if (fileSystem.exists(new Path(config.getHdfsUrl()))) {
         return true;
       }
     } catch (IOException e) {
@@ -113,7 +100,7 @@ public class HDStorage implements CloudSourceStorage {
   @Override
   public boolean bucketExists() {
     try {
-      if (fileSystem.exists(new Path(key))) {
+      if (fileSystem.exists(new Path(config.getHdfsUrl()+config.getTopicsFolder()))) {
         return true;
       }
     } catch (IOException e) {

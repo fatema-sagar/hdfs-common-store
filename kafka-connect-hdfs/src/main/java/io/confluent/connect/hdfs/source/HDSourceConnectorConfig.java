@@ -24,6 +24,12 @@ import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
  */
 public class HDSourceConnectorConfig extends CloudStorageSourceConnectorCommonConfig {
 
+  public static final String HDF_STORE_URL_CONFIG = "store.url";
+  private static final String HDF_STORE_URL_DOC = "The url which provides the address of "
+          + "the topic folder";
+  public static final String HDF_STORE_URL_DEFAULT = "hdfs://localhost:9000/";
+  public static final String HDF_STORE_URL_DISPLAY = "Store URL to fetch data";
+
   public static final String HDF_POLL_INTERVAL_MS_CONFIG = "hdfs.poll.interval.ms";
   private static final String HDF_POLL_INTERVAL_MS_DOC = "Frequency in milliseconds to "
           + "poll for new or"
@@ -48,8 +54,14 @@ public class HDSourceConnectorConfig extends CloudStorageSourceConnectorCommonCo
           + "to the store.";
   private static final String PARTITIONER_CLASS_DISPLAY = "Partitioner Class";
 
+  public static final String FILE_NAME_REGEX_PATTERN_VALUE = "(.+)\\+(\\d+)\\+(\\d+)\\+.+$";
+
   public HDSourceConnectorConfig(Map<String, String> props) {
     super(config(), props);
+  }
+
+  protected HDSourceConnectorConfig(ConfigDef configDef, Map<String, String> props) {
+    super(configDef, props);
   }
 
   @Override
@@ -60,7 +72,7 @@ public class HDSourceConnectorConfig extends CloudStorageSourceConnectorCommonCo
   public static ConfigDef config() {
     final String groupPartitioner = "Partitioner";
     int orderInGroup = 0;
-    ConfigDef configDef = new ConfigDef();
+    ConfigDef configDef = CloudStorageSourceConnectorCommonConfig.config();
 
     configDef
         .define(

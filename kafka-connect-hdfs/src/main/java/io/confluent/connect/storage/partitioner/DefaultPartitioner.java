@@ -31,6 +31,7 @@ public class DefaultPartitioner implements Partitioner {
   @Override
   public Set<String> getPartitions() {
     partitions = calculatePartitions();
+    log.info("Recieved partitions"+partitions);
     return partitions;
   }
 

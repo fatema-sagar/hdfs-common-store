@@ -29,12 +29,10 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
   @Before
   public void setup() throws IOException {
     startConnect();
-    //TODO: Start proxy or external system
   }
 
   @After
   public void close() {
-    //TODO: Stop the proxy or external system
     stopConnect();
   }
 
@@ -57,7 +55,7 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
     // produced.
     log.info("Waiting for records in destination topic ...");
     ConsumerRecords<byte[], byte[]> records = connect.kafka().consume(
-            15,
+            9,
         CONSUME_MAX_DURATION_MS,
         KAFKA_TOPIC
     );

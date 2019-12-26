@@ -20,8 +20,6 @@ public class HDStorageObject implements StorageObject {
   protected FileSystem fileSystem;
   protected String key;
   private static final Logger log = LoggerFactory.getLogger(HDStorageObject.class);
-  private static final long LENGTH_ZERO = 0L;
-  private HDSourceConnectorConfig config;
 
   public HDStorageObject(FileSystem fileSystem, String key) {
     this.fileSystem = fileSystem;

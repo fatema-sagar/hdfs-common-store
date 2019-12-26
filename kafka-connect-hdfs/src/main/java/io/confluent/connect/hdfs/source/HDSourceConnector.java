@@ -14,6 +14,7 @@ import org.apache.kafka.connect.connector.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -45,13 +46,20 @@ public class HDSourceConnector extends AbstractCloudStorageSourceConnector {
 
   @Override
   protected CloudStorageSourceConnectorCommonConfig createConfig(Map<String, String> props) {
+    props.put(HDSourceConnectorConfig.FILE_NAME_REGEX_PATTERN,
+            HDSourceConnectorConfig.FILE_NAME_REGEX_PATTERN_VALUE);
     this.config = new HDSourceConnectorConfig(props);
     return this.config;
   }
 
   @Override
   protected CloudSourceStorage createStorage() {
-    return new HDStorage(config, config.getHdfsUrl());
+    try {
+      return new HDStorage(config, config.getHdfsUrl());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   @Override
