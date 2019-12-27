@@ -21,7 +21,7 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
 
   private static final Logger log = LoggerFactory.getLogger(HDSourceConnectorIT.class);
 
-  private static final String CONNECTOR_NAME = "hdfs-source-connector";
+  private static final String CONNECTOR_NAME = "hdfs-source-connect";
 
   private static final int NUMBER_OF_PARTITIONS = 1;
   private static final String KAFKA_TOPIC = "avro_it_test";

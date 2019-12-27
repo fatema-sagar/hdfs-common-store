@@ -13,12 +13,10 @@ import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This has implementation of methods needed to interact with
@@ -34,14 +32,13 @@ public class HDStorage implements CloudSourceStorage {
   private Set<String> topicPartiton = new HashSet<>();
 
   /**
-   *
-   * @param url HDFS address
+   * @param url    HDFS address
    * @param config HDFS Configuration
    */
   public HDStorage(HDSourceConnectorConfig config, String url) throws IOException {
     this.url = url;
     this.config = config;
-    fileSystem = FileSystem.get(URI.create(config.getHdfsUrl()), new Configuration());
+    fileSystem = FileSystem.newInstance(URI.create(config.getHdfsUrl()), new Configuration());
   }
 
   public String getUrl() {
@@ -64,11 +61,10 @@ public class HDStorage implements CloudSourceStorage {
   }
 
   private void readFilesFromFolder(String path) throws IOException {
-    FileSystem fileSystem = FileSystem.get(URI.create(path), new Configuration());
     FileStatus[] status = fileSystem.listStatus(new Path(path));
     for (FileStatus fileStatus : status) {
       if (!fileStatus.getPath().toString().contains("/+tmp")) {
-        log.info("Partitions: "+status);
+        log.info("Partitions: " + status);
         topicPartiton.add(fileStatus.getPath().toString());
       }
     }
@@ -88,7 +84,7 @@ public class HDStorage implements CloudSourceStorage {
   @Override
   public boolean exists(String name) {
     try {
-      if (fileSystem.exists(new Path(config.getHdfsUrl()))) {
+      if (fileSystem.exists(new Path(name))) {
         return true;
       }
     } catch (IOException e) {
@@ -100,7 +96,7 @@ public class HDStorage implements CloudSourceStorage {
   @Override
   public boolean bucketExists() {
     try {
-      if (fileSystem.exists(new Path(config.getHdfsUrl()+config.getTopicsFolder()))) {
+      if (fileSystem.exists(new Path(config.getHdfsUrl() + config.getTopicsFolder()))) {
         return true;
       }
     } catch (IOException e) {
@@ -111,44 +107,62 @@ public class HDStorage implements CloudSourceStorage {
 
   @Override
   public void delete(String name) {
-    if (fileSystem.equals(name)) {
-      return;
-    } else {
-      try {
-        fileSystem.deleteSnapshot(new Path(key), name);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  @Override
-  public StorageObject open(String path) {
-    log.trace("Opening file stream to filesystem {} and path {}");
-    return new HDStorageObject(fileSystem, key);
-  }
-
-  public void close() {
     try {
-      fileSystem.close();
+      if (fileSystem.exists(new Path(name))) {
+        fileSystem.delete(new Path(name));
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
+  @Override
+  public StorageObject open(String path) {
+    log.trace("Opening file stream to path {}", path);
+    return new HDStorageObject(fileSystem, path);
+  }
+
+  public void close() {
+//    try {
+//      //fileSystem.close();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+  }
+
   public String getNextFileName(String path, String startAfterThisFile, String fileSuffix) {
     log.trace("Listing objects on hdfs with path {} starting after file {} and having suffix {}",
-        path, startAfterThisFile, fileSuffix
+            path, startAfterThisFile, fileSuffix
     );
+    String startAfterThis = startAfterThisFile;
     String filename = "";
-    Iterator itr = topicPartiton.iterator();
-
-    while (itr.hasNext()) {
-      if (itr.equals(startAfterThisFile)) {
-        if (itr.next().toString().contains(fileSuffix)) {
-          filename = itr.next().toString();
+    try {
+      List<FileStatus> fileStatuses = Arrays.asList(fileSystem.listStatus(new Path(path)));
+      FileStatus status;
+      if (fileStatuses == null) {
+        log.info("Partition in the given path {} is empty.", path);
+        return "";
+      }
+      if (fileStatuses.size() == 1) {
+        filename = fileStatuses.get(0).getPath().toString();
+        return filename;
+      }
+      Iterator iterator = fileStatuses.iterator();
+      while (iterator.hasNext()) {
+        if (startAfterThis == null) {
+          status = (FileStatus) iterator.next();
+          return status.getPath().toString();
+        } else {
+          if (iterator.next().toString().contains(startAfterThisFile)) {
+            startAfterThis = null;
+            continue;
+          }
         }
       }
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return filename;
   }

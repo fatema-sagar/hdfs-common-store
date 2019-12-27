@@ -38,8 +38,8 @@ public class DefaultPartitioner implements Partitioner {
   /**
    * Calculates number of partitions from given topic folder.
    * <p> Example : if file is located at -
-   * "topics/hdfs_topic/partition=0/hdfs_topic+0+0000000000.avro" then
-   * partition value will be "topics/gcs_topic/partition=0/" </p>
+   * "hdfs://localhost:9000/topics/hdfs_topic/partition=0/hdfs_topic+0+0000000000.avro" then
+   * partition value will be "topics/hdfs_topic/partition=0/" </p>
    * @return : List of partitions.
    */
   private Set<String> calculatePartitions() {
@@ -57,7 +57,8 @@ public class DefaultPartitioner implements Partitioner {
     log.trace("Get next object from topic {} using previous object {} and extension {}", topic,
             previousObject, extension
     );
-    return storage.getNextFileName(topic, previousObject, extension);
+    String fileName = storage.getNextFileName(topic, previousObject, extension);
+    return fileName;
   }
 
   public boolean shouldReconfigure() {

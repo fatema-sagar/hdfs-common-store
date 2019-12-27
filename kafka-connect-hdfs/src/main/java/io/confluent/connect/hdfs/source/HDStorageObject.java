@@ -22,6 +22,7 @@ public class HDStorageObject implements StorageObject {
   private static final Logger log = LoggerFactory.getLogger(HDStorageObject.class);
 
   public HDStorageObject(FileSystem fileSystem, String key) {
+    log.info("filesystem: {} and key : {}", fileSystem, key);
     this.fileSystem = fileSystem;
     this.key = key;
   }
@@ -29,6 +30,7 @@ public class HDStorageObject implements StorageObject {
   @Override
   public String getKey() {
     try {
+      log.info("Key: {}", key);
       if (fileSystem.exists(new Path(key))) {
         return key;
       }
@@ -77,12 +79,8 @@ public class HDStorageObject implements StorageObject {
 
   @Override
   public void close() {
-    try {
-      if (fileSystem != null) {
-        fileSystem.close();
-      }
-    } catch (IOException io) {
-      log.error("Error closing the filesystem {}: " + key);
+    if (fileSystem != null) {
+//        fileSystem.close();
     }
   }
 }
