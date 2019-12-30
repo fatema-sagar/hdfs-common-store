@@ -38,7 +38,7 @@ public class HDStorage implements CloudSourceStorage {
   public HDStorage(HDSourceConnectorConfig config, String url) throws IOException {
     this.url = url;
     this.config = config;
-    fileSystem = FileSystem.newInstance(URI.create(config.getHdfsUrl()), new Configuration());
+    fileSystem =  FileSystem.newInstance(URI.create(config.getHdfsUrl()), new Configuration());
   }
 
   public String getUrl() {
@@ -87,8 +87,8 @@ public class HDStorage implements CloudSourceStorage {
       if (fileSystem.exists(new Path(name))) {
         return true;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
     }
     return false;
   }
@@ -99,8 +99,8 @@ public class HDStorage implements CloudSourceStorage {
       if (fileSystem.exists(new Path(config.getHdfsUrl() + config.getTopicsFolder()))) {
         return true;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
     }
     return false;
   }
@@ -122,13 +122,13 @@ public class HDStorage implements CloudSourceStorage {
     return new HDStorageObject(fileSystem, path);
   }
 
-  public void close() {
+//  public void close() {
 //    try {
 //      //fileSystem.close();
 //    } catch (IOException e) {
 //      e.printStackTrace();
 //    }
-  }
+//  }
 
   public String getNextFileName(String path, String startAfterThisFile, String fileSuffix) {
     log.trace("Listing objects on hdfs with path {} starting after file {} and having suffix {}",

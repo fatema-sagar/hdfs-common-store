@@ -20,37 +20,33 @@ public class HDStorageObject implements StorageObject {
   protected FileSystem fileSystem;
   protected String key;
   private static final Logger log = LoggerFactory.getLogger(HDStorageObject.class);
+  FSDataInputStream inputStream;
 
   public HDStorageObject(FileSystem fileSystem, String key) {
-    log.info("filesystem: {} and key : {}", fileSystem, key);
     this.fileSystem = fileSystem;
     this.key = key;
+    try {
+      inputStream = fileSystem.open(new Path(key));
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
+    }
   }
 
   @Override
   public String getKey() {
     try {
-      log.info("Key: {}", key);
       if (fileSystem.exists(new Path(key))) {
         return key;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ioException) {
+      log.error("Unable to fetch the key {}", key,ioException);
     }
     return "";
   }
 
   @Override
   public InputStream getObjectContent() {
-    try {
-      if (fileSystem.exists(new Path(key))) {
-        FSDataInputStream inputStream = fileSystem.open(new Path(key));
-        return inputStream;
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return null;
+    return inputStream;
   }
 
   @Override
@@ -59,8 +55,8 @@ public class HDStorageObject implements StorageObject {
       if (fileSystem.exists(new Path(key))) {
         return fileSystem.getLength(new Path(key));
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ioException) {
+      log.error("Unable to return the length of the filesystem {}.", fileSystem, ioException);
     }
     return 0;
   }
@@ -71,16 +67,20 @@ public class HDStorageObject implements StorageObject {
       if (fileSystem.exists(new Path(key))) {
         return fileSystem.getLength(new Path(key));
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ioException) {
+      log.error("Unable to return the Metadata of the file {}.", fileSystem, ioException);
     }
     return null;
   }
 
   @Override
   public void close() {
-    if (fileSystem != null) {
-//        fileSystem.close();
+    try {
+      if (fileSystem != null) {
+        fileSystem.close();
+      }
+    } catch (IOException ioException) {
+      log.error("Unable to close the filesystem {}.", fileSystem, ioException);
     }
   }
 }

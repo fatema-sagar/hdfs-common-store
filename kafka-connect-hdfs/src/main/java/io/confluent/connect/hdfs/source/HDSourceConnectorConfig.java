@@ -24,12 +24,6 @@ import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
  */
 public class HDSourceConnectorConfig extends CloudStorageSourceConnectorCommonConfig {
 
-  public static final String HDF_STORE_URL_CONFIG = "store.url";
-  private static final String HDF_STORE_URL_DOC = "The url which provides the address of "
-          + "the topic folder";
-  public static final String HDF_STORE_URL_DEFAULT = "hdfs://localhost:9000/";
-  public static final String HDF_STORE_URL_DISPLAY = "Store URL to fetch data";
-
   public static final String HDF_POLL_INTERVAL_MS_CONFIG = "hdfs.poll.interval.ms";
   private static final String HDF_POLL_INTERVAL_MS_DOC = "Frequency in milliseconds to "
           + "poll for new or"

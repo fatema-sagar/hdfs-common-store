@@ -53,6 +53,13 @@ public class DefaultPartitioner implements Partitioner {
     return partitions;
   }
 
+  /**
+   * This method is responsible to return the next Filename/Object which has to be read by the Kafka.
+   * @param topic The Topic name
+   * @param previousObject denotes the file already read by Kafka.
+   * @return the name of the file which has to be read next by Kafka.
+   */
+
   public String getNextObjectName(String topic, String previousObject) {
     log.trace("Get next object from topic {} using previous object {} and extension {}", topic,
             previousObject, extension

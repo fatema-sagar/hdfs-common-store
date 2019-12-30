@@ -9,6 +9,7 @@ import io.confluent.connect.cloud.storage.source.CloudSourceStorage;
 import io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorCommonConfig;
 import io.confluent.connect.storage.partitioner.Partitioner;
 import io.confluent.connect.utils.Version;
+import io.confluent.connect.utils.licensing.ConnectLicenseManager;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.slf4j.Logger;
@@ -29,10 +30,16 @@ public class HDSourceConnector extends AbstractCloudStorageSourceConnector {
   private static Logger log = LoggerFactory.getLogger(HDSourceConnector.class);
 
   public static final int MAX_TIMEOUT = 10;
+  public ConnectLicenseManager licenseManager;
 
   protected HDSourceConnectorConfig config;
 
   public HDSourceConnector() {}
+
+  // visible for testing
+  HDSourceConnector(HDStorage storage, ConnectLicenseManager licenseManager) {
+    super(storage, licenseManager);
+  }
 
   @Override
   public String version() {
