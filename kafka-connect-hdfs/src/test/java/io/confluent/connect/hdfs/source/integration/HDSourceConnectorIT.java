@@ -7,6 +7,7 @@ package io.confluent.connect.hdfs.source.integration;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.test.IntegrationTest;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -59,5 +60,6 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
         CONSUME_MAX_DURATION_MS,
         KAFKA_TOPIC
     );
+    Assert.assertEquals(records.count(), 9);
   }
 }
