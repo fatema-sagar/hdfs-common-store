@@ -8,31 +8,34 @@ import io.confluent.connect.utils.licensing.ConnectLicenseManager;
 import io.confluent.connect.utils.licensing.LicenseConfigUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
-public class HDSourceConnectorTest {
+public class HDSourceConnectorTest extends Mockito {
 
-  Map<String, String> settings;
-  HDSourceConnector connector;
-  ConnectLicenseManager licenseMgr;
-  HDStorage hdStorage;
+  private Map<String, String> settings;
+  private HDSourceConnector connector;
+  private HDStorage storage;
+  private ConnectLicenseManager licenseMgr;
+  private String AVRO_FORMAT_CLASS = "io.confluent.connect.hdfs.format.avro.AvroFormat";
 
   @Before
   public void before() {
     settings = new HashMap<>();
-    connector = new HDSourceConnector();
-    // Use a mocked license manager by default
-    licenseMgr = mock(ConnectLicenseManager.class);
-//    HDSourceConnector(hdStorage, licenseMgr);
-
+    settings.put("format.class", AVRO_FORMAT_CLASS);
+    settings.put("confluent.topic.bootstrap.servers", "localhost:9092");
+    settings.put("store.url", "hdfs://localhost:9000/");
     settings.put(HDSourceConnectorConfig.STORE_URL_CONFIG, "hdfs://localhost:9000");
     settings.put(LicenseConfigUtil.CONFLUENT_TOPIC_BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+
+    // Use a mocked license manager by default
+    licenseMgr = mock(ConnectLicenseManager.class);
+    connector = new HDSourceConnector(storage, licenseMgr);
   }
 
   @Test
@@ -43,7 +46,7 @@ public class HDSourceConnectorTest {
   @Test
   public void shouldStartWithoutError() {
     startConnector();
-//    verify(connector.licenseManager, times(1)).registerOrValidateLicense();
+    verify(connector.licenseManager, times(1)).registerOrValidateLicense();
   }
 
   @Test
@@ -54,7 +57,6 @@ public class HDSourceConnectorTest {
   @Test
   public void shouldGenerateValidTaskConfigs() {
     startConnector();
-    //TODO: Change this logic to reflect expected behavior of your connector
     List<Map<String, String>> taskConfigs = connector.taskConfigs(1);
     assertTrue("zero task configs provided", !taskConfigs.isEmpty());
     for (Map<String, String> taskConfig : taskConfigs) {
@@ -74,19 +76,19 @@ public class HDSourceConnectorTest {
     assertNotNull(connector.config());
   }
 
-//  @Test
-//  public void version() {
-//    assertNotNull(connector.version());
-//    assertFalse(connector.version().equals("0.0.0.0"));
-//    assertTrue(connector.version().matches("^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)(-\\w+)?$"));
-//  }
+  @Test
+  public void version() {
+    assertNotNull(connector.version());
+    assertFalse(connector.version().equals("0.0.0.0"));
+    assertTrue(connector.version().matches("^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)(-\\w+)?$"));
+  }
 
   /**
    * Start the connector, via the {@link HDSourceConnector#doStart()} method that uses our mock
    * license manager.
    */
   protected void startConnector() {
-    connector.config = new HDSourceConnectorConfig(settings);
+    connector.setConfig(settings);
     connector.doStart();
   }
 }

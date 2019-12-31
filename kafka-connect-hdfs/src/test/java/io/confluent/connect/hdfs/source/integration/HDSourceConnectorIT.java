@@ -15,7 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
+
+import static io.confluent.connect.hdfs.source.HDAvroTestUtils.writeAvroFile;
+import static io.confluent.connect.hdfs.source.HDJsonTestUtils.writeJsonFile;
+import static java.lang.String.format;
 
 @Category(IntegrationTest.class)
 public class HDSourceConnectorIT extends BaseConnectorIT {
@@ -42,6 +47,8 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
     // create topic in Kafka
     connect.kafka().createTopic(KAFKA_TOPIC, NUMBER_OF_PARTITIONS);
 
+    createHDTopicAndUploadFile("avro", "DefaultPartitioner");
+
     // setup up props for the source connector
     Map<String, String> props = connectorConfiguration();
     props.put("format.class", AVRO_FORMAT_CLASS);
@@ -61,5 +68,39 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
         KAFKA_TOPIC
     );
     Assert.assertEquals(records.count(), 9);
+  }
+
+  private void createHDTopicAndUploadFile(final String fileExtension, final String partitioner) throws IOException {
+    final String filePrefix = "topics/" + KAFKA_TOPIC;
+
+    Path hdFile1 = null;
+    Path hdFile2 = null;
+    Path hdFile3 = null;
+
+    if (fileExtension.equalsIgnoreCase("avro")) {
+      // add files
+      hdFile1 = writeAvroFile(5);
+      hdFile2 = writeAvroFile(5);
+      hdFile3 = writeAvroFile(5);
+    } else if (fileExtension.equalsIgnoreCase("json")) {
+      hdFile1 = writeJsonFile(5);
+      hdFile2 = writeJsonFile(5);
+      hdFile3 = writeJsonFile(5);
+    }
+
+    uploadFileToHDWithDefaultPartition(fileExtension, filePrefix, hdFile1, hdFile2, hdFile3);
+
+  }
+
+  private void uploadFileToHDWithDefaultPartition(String fileExtension, String filePrefix,
+        Path hdFile1, Path hdFile2, Path hdFile3) {
+    final String hdKey1 = format("%s/partition=0/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
+    final String hdKey2 = format("%s/partition=1/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
+    final String hdKey3 = format("%s/partition=2/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
+  }
+
+  @Test
+  public void testJsonDataWithDefaultPartitioner() throws Exception{
+
   }
 }
