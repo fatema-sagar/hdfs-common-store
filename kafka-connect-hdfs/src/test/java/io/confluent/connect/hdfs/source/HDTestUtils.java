@@ -48,7 +48,7 @@ public class HDTestUtils {
       this.age = age;
     }
 
-    public User(Map<String, String> values) {
+    public User(Map<String, Object> values) {
       this.firstname = (String) values.getOrDefault("firstname", "");
       this.lastname = (String) values.getOrDefault("lastname", "");
       this.age = ((Long) values.getOrDefault("age", 0L)).intValue();

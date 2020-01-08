@@ -94,9 +94,9 @@ public class HDSourceConnectorIT extends BaseConnectorIT {
 
   private void uploadFileToHDWithDefaultPartition(String fileExtension, String filePrefix,
         Path hdFile1, Path hdFile2, Path hdFile3) {
-    final String hdKey1 = format("%s/partition=0/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
-    final String hdKey2 = format("%s/partition=1/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
-    final String hdKey3 = format("%s/partition=2/"+ KAFKA_TOPIC +"+0+0000000000." + filePrefix);
+    final String hdKey1 = format("%s/partition=0/"+ KAFKA_TOPIC +"+0+0000000000." + fileExtension, filePrefix);
+    final String hdKey2 = format("%s/partition=1/"+ KAFKA_TOPIC +"+0+0000000000." + fileExtension, filePrefix);
+    final String hdKey3 = format("%s/partition=2/"+ KAFKA_TOPIC +"+0+0000000000." + fileExtension, filePrefix);
   }
 
   @Test

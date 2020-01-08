@@ -22,7 +22,7 @@ import java.util.Map;
 public class HDJsonTestUtils {
 
   public static User fromJsonRecord(SourceRecord record) throws IOException {
-    return new User((Map<String, String>) record.value());
+    return new User((Map<String, Object>) record.value());
   }
 
   public static Path writeJsonFile(int messages) throws IOException {
