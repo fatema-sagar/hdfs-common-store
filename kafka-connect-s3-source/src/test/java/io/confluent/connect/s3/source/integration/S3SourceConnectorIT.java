@@ -21,8 +21,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.confluent.connect.s3.source.integration.BaseConnectorIT;
-
 import static io.confluent.connect.s3.source.S3AvroTestUtils.writeAvroFile;
 import static io.confluent.connect.s3.source.S3ByteArrayTestUtils.writeByteArrayFile;
 import static io.confluent.connect.s3.source.S3JsonTestUtils.writeJsonFile;

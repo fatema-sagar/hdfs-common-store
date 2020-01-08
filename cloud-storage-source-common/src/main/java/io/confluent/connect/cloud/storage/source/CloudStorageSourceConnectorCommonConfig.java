@@ -4,21 +4,20 @@
 
 package io.confluent.connect.cloud.storage.source;
 
-import static io.confluent.connect.utils.validators.Validators.instanceOf;
-import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
+import io.confluent.connect.utils.licensing.LicenseConfigUtil;
+import io.confluent.connect.utils.recommenders.Recommenders;
+import io.confluent.connect.utils.validators.Validators;
+import org.apache.kafka.common.config.AbstractConfig;
+import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.connect.errors.ConnectException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.kafka.common.config.AbstractConfig;
-import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.connect.errors.ConnectException;
-
-import io.confluent.connect.utils.licensing.LicenseConfigUtil;
-import io.confluent.connect.utils.recommenders.Recommenders;
-import io.confluent.connect.utils.validators.Validators;
+import static io.confluent.connect.utils.validators.Validators.instanceOf;
+import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
 
 /**
  * This Class has common configurations related to Cloud source storage connector.

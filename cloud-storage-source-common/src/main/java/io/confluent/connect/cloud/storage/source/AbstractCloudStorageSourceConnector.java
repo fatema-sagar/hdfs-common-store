@@ -4,6 +4,11 @@
 
 package io.confluent.connect.cloud.storage.source;
 
+import io.confluent.connect.cloud.storage.source.util.PartitionCheckingTask;
+import io.confluent.connect.storage.partitioner.Partitioner;
+import io.confluent.connect.utils.Version;
+import io.confluent.connect.utils.licensing.ConnectLicenseManager;
+import io.confluent.connect.utils.licensing.LicenseConfigUtil;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
@@ -11,22 +16,16 @@ import org.apache.kafka.connect.util.ConnectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.confluent.connect.storage.partitioner.Partitioner;
-import io.confluent.connect.cloud.storage.source.util.PartitionCheckingTask;
-import io.confluent.connect.utils.Version;
-import io.confluent.connect.utils.licensing.ConnectLicenseManager;
-import io.confluent.connect.utils.licensing.LicenseConfigUtil;
 
 import static io.confluent.connect.cloud.storage.source.CloudStorageSourceConnectorCommonConfig.FOLDERS_CONFIG;
 
