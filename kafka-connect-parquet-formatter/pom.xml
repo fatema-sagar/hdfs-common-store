@@ -19,7 +19,7 @@
     <inceptionYear>2019</inceptionYear>
 
     <properties>
-        <hadoop.version>3.1.2</hadoop.version>
+        <hadoop.version>3.2.4</hadoop.version>
     </properties>
 
     <dependencies>
